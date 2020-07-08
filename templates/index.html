@@ -1,0 +1,121 @@
+{% extends "base.html" %} {% block content %}
+
+<style>
+input[type=file]
+{
+  background-color:  #3CBC8D;
+  border: black;
+  color: black;
+  padding: 16px 32px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+</style>
+
+
+<!-- Container (About Section) -->
+
+  
+    <form id="upload-file" method="post" enctype="multipart/form-data">
+        <label for="imageUpload" class="upload-label"> Click the button below to upload xray.
+        </label>
+	
+		<center>
+        <input type="file" name="file" id="imageUpload" accept=".png, .jpg, .jpeg">
+        </center>
+	</form>
+
+    <div class="image-section" style="display:none;">
+        <div class="img-preview">
+            <div id="imagePreview">
+            </div>
+        </div>
+        <div>
+  
+    <button type="input" class="btn btn-primary btn-lg " id="btn-predict" >Upload Image👨‍⚕️​🩺​</button>
+	
+	</div>
+    </div>
+
+    <div class="loader" style="display:none;"></div>
+
+    <h3 id="result">
+        <span> </span>
+    </h3>
+
+
+
+{% endblock %}
+
+<!-- Footer -->
+<footer class="w3-center w3-black w3-padding-64 w3-opacity w3-hover-opacity-off">
+  <a href="#home" class="w3-button w3-light-grey"><i class="fa fa-arrow-up w3-margin-right"></i>To the top</a>
+  <div class="w3-xlarge w3-section">
+    <a class="fa fa-facebook-official w3-hover-opacity" href="https://www.facebook.com/IsmileTechnologies"></a>
+    <a class="fa fa-instagram w3-hover-opacity" href="https://www.instagram.com/ismiletechno/"></a>
+    <a class="fa fa-twitter w3-hover-opacity" href="https://twitter.com/iSmileTechnolo1"></a>
+    <a class="fa fa-linkedin w3-hover-opacity" href="https://www.linkedin.com/company/ismiletechnologies/"></a>
+  </div>
+</footer>
+ 
+<script>
+
+$(document).ready(function () {
+    // Init
+    $('.image-section').hide();
+    $('.loader').hide();
+    $('#result').hide();
+
+    // Upload Preview
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
+                $('#imagePreview').hide();
+                $('#imagePreview').fadeIn(650);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    $("#imageUpload").change(function () {
+        $('.image-section').show();
+        $('#btn-predict').show();
+        $('#result').text('');
+        $('#result').hide();
+        readURL(this);
+    });
+
+    // Predict
+    $('#btn-predict').click(function () {
+        var form_data = new FormData($('#upload-file')[0]);
+
+        // Show loading animation
+        $(this).hide();
+        $('.loader').show();
+
+        // Make prediction by calling api /predict
+        $.ajax({
+            type: 'POST',
+            url: '/predict',
+            data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            async: true,
+            success: function (data) {
+                // Get and display the result
+                $('.loader').hide();
+                $('#result').fadeIn(600);
+                $('#result').text(' Result:  ' + data);
+                console.log('Success!');
+            },
+        });
+    });
+
+});
+</script>
+
+</body>
+</html>
